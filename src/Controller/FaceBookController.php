@@ -9,22 +9,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
 class FaceBookController extends AbstractController
 {
     /**
-     * @Route("/facebook", name="face_book")
-     */
-    public function index(): Response
-    {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/FaceBookController.php',
-        ]);
-    }
-
-    /**
-     * @Route("/connect/facebook", name="connect_facebook")
+     * @Route("/api/v1.0/connect/facebook", name="connect_facebook")
      */
     public function connectAction(ClientRegistry $clientRegistry)
     {
@@ -33,13 +23,11 @@ class FaceBookController extends AbstractController
             ->redirect([
                 'public_profile',
                 'email',
-                //instagram
                 'instagram_basic',
                 'instagram_manage_comments',
                 'instagram_manage_insights',
                 'instagram_content_publish',
                 ' ids_for_business',
-                //
                 'pages_show_list',
                 'pages_read_engagement',
                 'pages_show_list',
@@ -49,7 +37,7 @@ class FaceBookController extends AbstractController
             ]);
     }
     /**
-     * @Route("/connect/facebook/check", name="connect_facebook_check")
+     * @Route("/api/v1.0/connect/facebook/check", name="connect_facebook_check")
      */
     public function connectCheckAction(ClientRegistry $clientRegistry, MainAccountService $main_account_service)
     {
@@ -68,20 +56,6 @@ class FaceBookController extends AbstractController
             ]);
         }
 
-        new LogiqueException('Corrupted logic');
-    }
-
-    /**
-     * @Route("/test", name="test")
-     */
-    public function test(Request $request)
-    {
-        $data = $request->toArray();
-        var_dump($data['data']);
-        $responce = new JsonResponse();
-        $responce->setData([
-            'data' => 'Tout est op'
-        ]);
-        return $responce;
+        throw new \LogiqueException('Corrupted logic');
     }
 }
