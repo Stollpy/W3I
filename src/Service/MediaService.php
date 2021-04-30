@@ -6,7 +6,6 @@ namespace App\Service;
 
 use App\Repository\FanAccountRepository;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use App\Service\UploadService;
 
 class MediaService
 {
@@ -26,22 +25,15 @@ class MediaService
     private $account_fan_repository;
 
     /**
-     * @var UploadService
-     */
-    private $upload_service;
-
-    /**
      * MediaService constructor.
      * @param HttpClientInterface $client
      * @param FanAccountRepository $account_fan_repository
-     * @param UploadService $upload_service
      */
-    public function __construct(HttpClientInterface $client, FanAccountRepository $account_fan_repository, UploadService $upload_service)
+    public function __construct(HttpClientInterface $client, FanAccountRepository $account_fan_repository)
     {
         $this->client = $client;
         $this->base_url_fb = 'https://graph.facebook.com/v10.0/';
         $this->account_fan_repository = $account_fan_repository;
-        $this->upload_service = $upload_service;
     }
 
     /**
@@ -64,7 +56,7 @@ class MediaService
             $fan_account = $this->account_fan_repository->findOneBy(["id" => $data['id_fan']]);
             $access_token = $fan_account->getAccessToken();
             $id_page_insta = $fan_account->getIdPageInsta();
-            $data['media']['localisation'] = $localisation;
+            $data['media']['location'] = $localisation;
             $this->publishContainer($id_page_insta, $data['media'], $access_token);
         }
 
