@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\MediaService;
+use App\Service\UploadService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,10 +17,14 @@ class MediaController extends AbstractController
      * @param Request $request
      * @param MediaService $media_service
      */
-    public function index(Request $request, MediaService $media_service): Response
+    public function index(Request $request, MediaService $media_service, UploadService $upload_service): Response
     {
         $data = json_decode($request->getContent(), true);
+        $file = $request->files->get('file');
+
+        $data['media']['url'] = $upload_service->uploadPulibc($file);
         $bool = $media_service->publishMedia($data);
+
         if($bool == true){
             return new JsonResponse([
                 "message" => "Vos medias on bien ete publie",

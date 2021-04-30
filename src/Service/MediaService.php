@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Repository\FanAccountRepository;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Service\UploadService;
 
 class MediaService
 {
@@ -17,7 +18,7 @@ class MediaService
     /**
      * @var string
      */
-    private $base_url;
+    private $base_url_fb;
 
     /**
      * @var AccountFanRepository
@@ -25,22 +26,29 @@ class MediaService
     private $account_fan_repository;
 
     /**
+     * @var UploadService
+     */
+    private $upload_service;
+
+    /**
      * MediaService constructor.
      * @param HttpClientInterface $client
      * @param FanAccountRepository $account_fan_repository
+     * @param UploadService $upload_service
      */
-    public function __construct(HttpClientInterface $client, FanAccountRepository $account_fan_repository)
+    public function __construct(HttpClientInterface $client, FanAccountRepository $account_fan_repository, UploadService $upload_service)
     {
         $this->client = $client;
-        $this->base_url = 'https://graph.facebook.com/v10.0/';
+        $this->base_url_fb = 'https://graph.facebook.com/v10.0/';
         $this->account_fan_repository = $account_fan_repository;
+        $this->upload_service = $upload_service;
     }
 
     /**
      ***********************************************************
      * Cette méthode permet de publié un média
-     * depuis un compte fan, d'un object média renvoyant l'url
-     * de l'image à publié ainsi qu'une description associé
+     * depuis un compte fan et d'un object média renvoyant l'url
+     * de l'image / upload une image, à publié ainsi qu'une description associé
      ***********************************************************
      * @param array $data
      * @return boolean
@@ -56,6 +64,7 @@ class MediaService
             $fan_account = $this->account_fan_repository->findOneBy(["id" => $data['id_fan']]);
             $access_token = $fan_account->getAccessToken();
             $id_page_insta = $fan_account->getIdPageInsta();
+            $data['media']['localisation'] = $localisation;
             $this->publishContainer($id_page_insta, $data['media'], $access_token);
         }
 
@@ -77,7 +86,7 @@ class MediaService
     {
         $response = $this->client->request(
             'POST',
-            $this->base_url.$id_page_insta.'/media?image_url='.$object_media['url'].'&caption='.$object_media['description'].'&access_token='.$access_token
+            $this->base_url_fb.$id_page_insta.'/media?image_url='.$object_media['url'].'&caption='.$object_media['description'].'&location_id='.$object_media['location'].'&access_token='.$access_token
         );
         $data = json_decode($response->getContent(), true);
         return $data['id'];
@@ -107,7 +116,7 @@ class MediaService
 
             $response = $this->client->request(
                 'POST',
-                $this->base_url.$id_page_insta.'/media_publish?creation_id='.$id_container.'&access_token='.$access_token
+                $this->base_url_fb.$id_page_insta.'/media_publish?creation_id='.$id_container.'&access_token='.$access_token
             );
 
             $data = $response->toArray();

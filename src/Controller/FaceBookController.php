@@ -45,13 +45,13 @@ class FaceBookController extends AbstractController
         $main_account_service->createAccount($access);
 
         $response = new JsonResponse();
-        if(!$access){
-            $response->setData([
+        if($access){
+            return $response->setData([
                 'success' => 'Votre compte à été connecté à W3I',
                 'access_token' => $access
             ]);
         }else{
-            $response->setData([
+            return $response->setData([
                 'error' => 'Erreur lors de l\'authentification via Facebook'
             ]);
         }

@@ -14,10 +14,11 @@ class HomeController extends AbstractController
      */
     public function index(UserRepository $user_repository): Response
     {
-        $user = $user_repository->find($this->getUser());
 
         return $this->json([
-            'user' => $user
+            'id_user' => $this->getUser()->getId(),
+            'firstname' => $this->getUser()->getFirstname(),
+            'main_accounts' => $this->getUser()->getMainAccounts()
         ]);
     }
 }
