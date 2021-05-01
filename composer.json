@@ -71,7 +71,8 @@
             "@auto-scripts"
         ],
         "compile": [
-            "php bin/console doctrine:migration:migrate"
+            "php bin/console doctrine:migration:migrate",
+            "php bin/console lexik:jwt:generate-keypair"
         ]
     },
     "conflict": {
